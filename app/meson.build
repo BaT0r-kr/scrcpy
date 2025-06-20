@@ -117,7 +117,7 @@ dependencies = [
     dependency('libavcodec', version: '>= 57.37', static: static),
     dependency('libavutil', static: static),
     dependency('libswresample', static: static),
-    dependency('sdl2', version: '>= 2.0.5', static: static),
+    dependency('sdl3', static: static),
 ]
 
 if v4l2_support
