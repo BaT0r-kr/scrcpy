@@ -16,6 +16,9 @@ struct sc_opengl {
     (*GetString)(GLenum name);
 
     void
+    (*BindTexture)(GLenum target, GLuint texture);
+
+    void
     (*TexParameterf)(GLenum target, GLenum pname, GLfloat param);
 
     void

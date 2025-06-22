@@ -136,14 +136,32 @@ sc_display_create_texture(struct sc_display *display,
     if (display->mipmaps) {
         struct sc_opengl *gl = &display->gl;
 
-        SDL_GL_BindTexture(texture, NULL, NULL);
+        SDL_PropertiesID props = SDL_GetTextureProperties(texture);
+        if (!props) {
+            LOGE("Could not get texture properties: %s", SDL_GetError());
+            SDL_DestroyTexture(texture);
+            return NULL;
+        }
+
+        int64_t texture_id =
+            SDL_GetNumberProperty(props,
+                                  SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER, 0);
+        SDL_DestroyProperties(props);
+        if (!texture_id) {
+            LOGE("Could not get texture id: %s", SDL_GetError());
+            SDL_DestroyTexture(texture);
+            return NULL;
+
+        }
+
+        gl->BindTexture(GL_TEXTURE_2D, texture_id);
 
         // Enable trilinear filtering for downscaling
         gl->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                           GL_LINEAR_MIPMAP_LINEAR);
         gl->TexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -1.f);
 
-        SDL_GL_UnbindTexture(texture);
+        gl->BindTexture(GL_TEXTURE_2D, 0);
     }
 
     return texture;
